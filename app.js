@@ -34,12 +34,12 @@ app.use((req, res, next) => {
 // 라우터 정의
 const globalRouter = require('./src/routers/globalRouter.js');
 // const userRouter = require('./routers/userRouter');
-// const boardRouter = require('./routers/boardRouter');
+const boardRouter = require('./src/routers/boardRouter.js');
 
 // 라우터를 Express 애플리케이션에 등록
 app.use('/', globalRouter);
 // app.use('/users', userRouter);
-// app.use('/board', boardRouter);
+app.use('/board', boardRouter);
 
 // 서버 시작
 app.listen(port, () => {
