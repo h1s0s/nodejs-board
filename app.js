@@ -1,5 +1,6 @@
 const express = require('express');
 const mysql = require('mysql2');
+const path = require('path');
 const dbconfig = require('./config/database.js');
 
 const app = express();
@@ -7,6 +8,11 @@ const port = 3000;
 
 // MySQL 연결 풀 생성
 const pool = mysql.createPool(dbconfig);
+
+// EJS 템플릿 엔진 설정
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
 
 // MySQL 미들웨어
 app.use((req, res, next) => {
@@ -26,7 +32,7 @@ app.use((req, res, next) => {
 });
 
 // 라우터 정의
-const globalRouter = require('./routers/globalRouter');
+const globalRouter = require('./src/routers/globalRouter.js');
 // const userRouter = require('./routers/userRouter');
 // const boardRouter = require('./routers/boardRouter');
 
