@@ -1,7 +1,12 @@
-Node.js 게시판 만들기
+# Node.js Restful API 게시판 프로젝트
 
-기술 스택 : Node.js, MySQL, Ejs템플릿 엔진, Ajax
+Node.js 기반 Restful API 게시판 개발 프로젝트 입니다
 
-1. 게시물 읽기,작성,수정,삭제가 비동기 처리로 DB에 저장되며 화면 전환
+### 기술 스택
+Node.js, MySQL
+
+1. 게시물 CRUD API 개발
+2. Ajax로 비동기 처리
+3. 시리얼라이즈 라이브러리 사용
 
 
