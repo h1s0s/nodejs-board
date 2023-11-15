@@ -36,7 +36,7 @@
     <ul id="postList">
         <% if (results && results.length > 0) { %>
         <% results.forEach(board => { %>
-            <li><%= board.boardNo %>. <strong><%= board.writer == null ? '무명의 유저' : board.write %></strong> : <%= board.content %> </li>    
+            <li id="<%= 'board_' + board.boardNo %>"><%= board.boardNo %>. <strong><%= board.writer == null ? '무명의 유저' : board.write %></strong> : <%= board.content %> <button onclick="editPost(this)">수정</button> <button onclick="deletePost(this)">삭제</button></li>    
         <% });%>
         <% } else { %>
             <p id="empty">게시글이 없습니다.</p>
@@ -73,6 +73,7 @@
                 // 글 목록에 추가
                 const postList = document.getElementById('postList');
                 const li = document.createElement('li');
+                li.id = `board_${data.boardNo}`;
                 li.innerHTML = `${data.boardNo}. <strong>무명의 유저</strong> : ${content} <button onclick="editPost(this)">수정</button> <button onclick="deletePost(this)">삭제</button>`;
                 postList.appendChild(li);
                 if(document.getElementsByTagName('p')[0] !== undefined){
@@ -91,9 +92,38 @@
     }
 
     function deletePost(button) {
-        const listItem = button.parentNode;
-        const postList = listItem.parentNode;
-        postList.removeChild(listItem);
+        var boardPw = prompt('댓글을 삭제하려면 비밀번호를 입력하세요.');
+        if(boardPw === "" || boardPw.length !== 4 || !/^\d+$/.test(boardPw)){
+            alert("비밀번호를 4자리 숫자로 입력해주세요");
+            return;
+        }
+        const li = button.parentElement;
+        const boardNo = li.id.replace('board_', '');
+
+        fetch('/board', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    data: { boardNo , boardPw }
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {              
+                if (data.message === '게시글이 삭제되었습니다.') {
+                    alert('게시글이 삭제되었습니다.');
+                    document.getElementById("board_" + boardNo).remove();
+                } else {
+                    alert('비밀번호가 틀렸습니다.');
+                }  
+
+            })
+            .catch(error => {
+                console.error('데이터 전송 중 에러 발생:', error);
+                alert("에러가 발생했습니다. 다시 시도해주세요.")
+                return;
+            });
     }
 
     function editPost(button) {
