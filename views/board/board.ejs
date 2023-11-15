@@ -23,63 +23,86 @@
     <h1>간단한 글 작성 페이지</h1>
 
     <form id="postForm">
-        <label for="username">아이디:</label>
-        <input type="text" id="username" required>
+        <label for="content">내용:</label>
+        <textarea id="content" required></textarea>
 
-        <label for="post">글:</label>
-        <textarea id="post" required></textarea>
+        <label for="boardPw">비밀번호:</label>
+        <input type="password" id="boardPw" pattern="\d{4}" maxlength="4" required>
 
-        <label for="password">암호:</label>
-        <input type="password" id="password" required>
-
-        <button type="button" onclick="submitPost()">작성</button>
+        <button type="button" onclick="submitBoard()">작성</button>
     </form>
 
     <h2>글 목록</h2>
-    <% if (results && results.length > 0) { %>
     <ul id="postList">
+        <% if (results && results.length > 0) { %>
         <% results.forEach(board => { %>
-            <li><%= board.writer %> : <%= board.content %> </li>    
+            <li><%= board.boardNo %>. <strong><%= board.writer == null ? '무명의 유저' : board.write %></strong> : <%= board.content %> </li>    
         <% });%>
+        <% } else { %>
+            <p id="empty">게시글이 없습니다.</p>
+        <% } %>
     </ul>
-    <% } else { %>
-        <p>게시글이 없습니다.</p>
-    <% } %>
-    <script>
-        function submitPost() {
-            const username = document.getElementById('username').value;
-            const post = document.getElementById('post').value;
-            const password = document.getElementById('password').value;
 
-            // TODO: 서버에 데이터 전송 및 처리 (실제로는 서버 측에서 이 부분을 처리해야 함)
-
-            // 임시적으로 글 목록에 추가
-            const postList = document.getElementById('postList');
-            const li = document.createElement('li');
-            li.innerHTML = `<strong>${username}:</strong> ${post} <button onclick="editPost(this)">수정</button> <button onclick="deletePost(this)">삭제</button>`;
-            postList.appendChild(li);
-
-            // 입력 필드 초기화
-            document.getElementById('username').value = '';
-            document.getElementById('post').value = '';
-            document.getElementById('password').value = '';
-        }
-
-        function deletePost(button) {
-            const listItem = button.parentNode;
-            const postList = listItem.parentNode;
-            postList.removeChild(listItem);
-        }
-
-        function editPost(button) {
-            const listItem = button.parentNode;
-            const post = listItem.firstChild.nextSibling.nodeValue.trim();
-            const newText = prompt('수정할 내용을 입력하세요:', post);
-
-            if (newText !== null) {
-                listItem.firstChild.nextSibling.nodeValue = newText;
-            }
-        }
-    </script>
 </body>
 </html>
+<script>
+    function submitBoard() {
+        // const username = document.getElementById('username').value;
+        const content = document.getElementById('content').value;
+        const boardPw = document.getElementById('boardPw').value;
+
+        if(content === ""){
+            alert("내용을 입력해주세요")
+            return;
+        } else if(boardPw === "" || boardPw.length !== 4 || !/^\d+$/.test(boardPw)){
+            alert("비밀번호를 4자리 숫자로 입력해주세요")
+            return;
+        }
+
+        fetch('/board', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    data: { userNo: 1, content, boardPw }
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {                
+                // 글 목록에 추가
+                const postList = document.getElementById('postList');
+                const li = document.createElement('li');
+                li.innerHTML = `${data.boardNo}. <strong>무명의 유저</strong> : ${content} <button onclick="editPost(this)">수정</button> <button onclick="deletePost(this)">삭제</button>`;
+                postList.appendChild(li);
+                if(document.getElementsByTagName('p')[0] !== undefined){
+                    document.getElementById('postList').removeChild(document.getElementsByTagName('p')[0]);
+                }
+
+                // 입력 필드 초기화
+                document.getElementById('content').value = '';
+                document.getElementById('boardPw').value = '';
+            })
+            .catch(error => {
+                console.error('데이터 전송 중 에러 발생:', error);
+                alert("에러가 발생했습니다. 다시 시도해주세요.")
+                return;
+            });
+    }
+
+    function deletePost(button) {
+        const listItem = button.parentNode;
+        const postList = listItem.parentNode;
+        postList.removeChild(listItem);
+    }
+
+    function editPost(button) {
+        const listItem = button.parentNode;
+        const post = listItem.firstChild.nextSibling.nodeValue.trim();
+        const newText = prompt('수정할 내용을 입력하세요:', post);
+
+        if (newText !== null) {
+            listItem.firstChild.nextSibling.nodeValue = newText;
+        }
+    }
+</script>

@@ -3,19 +3,16 @@ const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const dotenv = require('dotenv');
-// const mysql = require('mysql2');
-// const dbconfig = require('./config/database.js');
 const path = require('path');
 
 dotenv.config();
 const { sequelize } = require('./models');
 const app = express();
 const port = 3000;
-// MySQL 연결 풀 생성
-// const pool = mysql.createPool(dbconfig);
+
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
-sequelize.sync({ force: false })
+sequelize.sync()
 .then(() => {
     console.log('데이터베이스 연결 성공');
 })
@@ -23,22 +20,14 @@ sequelize.sync({ force: false })
     console.error(err);
 })
 
-// MySQL 미들웨어
-// app.use((req, res, next) => {
-//     pool.getConnection((err, connection) => {
-//         if (err) {
-//             console.error('Error getting MySQL connection:', err);
-//             res.status(500).send('Internal Server Error');
-//             return;
-//         }
-
-//         // req 객체에 connection을 추가하여 라우터에서 사용할 수 있도록 함
-//         req.mysql = connection;
-
-//         // 다음 미들웨어 또는 라우터로 이동
-//         next();
-//     });
-// });
+//force : 서버 실행 시 마다 테이블을 재생성 할 것인지 아닌지
+sequelize.sync({force: false})
+    .then(()=>{
+        console.log("DB Connected Success");
+    })
+    .catch((err)=> {
+        console.error(err);
+    });
 
 // 라우터 정의
 const indexRouter = require('./routes');
@@ -61,10 +50,10 @@ app.use(session({
     name: 'session-cookie'
 }));
 
+
 // 라우터를 
 app.use('/', indexRouter);
-// app.use('/user', userRouter);
-// app.use('/board', boardRouter);
+app.use('/board', boardRouter);
 
 app.use((req, res, next) => {
     console.log('모든 요청에 다 실행됩니다.');
@@ -88,15 +77,3 @@ app.use((err, req, res, next) => {
 app.listen(port, () => {
     console.log(`Connected ${port} port`);
 });
-
-// MySQL 연결 종료를 위한 이벤트 리스너 추가
-// process.on('SIGINT', () => {
-//     pool.end((err) => {
-//         if (err) {
-//             console.error('Error closing MySQL connection pool:', err);
-//             process.exit(1);
-//         }
-//         console.log('MySQL connection pool closed.');
-//         process.exit(0);
-//     });
-// });

@@ -7,10 +7,10 @@ const router = express.Router();
  * @route GET /board
  * @description 게시글 목록 조회, 렌더링
  */
-router.get('/board', async (req, res, next) => {
+router.get('/', async (req, res, next) => {
     try {
         const boards = await Board.findAll();
-        res.render('board', { boards });
+        res.render('board/board', { results: boards })
     } catch (err) {
         console.error(err);
         next(err);
@@ -21,16 +21,17 @@ router.get('/board', async (req, res, next) => {
  * @route POST /board
  * @description 게시글 작성
  */
-router.post('/board', async (req, res, next) => {
+router.post('/', async (req, res, next) => {
     try {
         const board = await Board.create({
-            content : req.body.content,
-            boardPw : req.body.boardPw
+            userNo : req.body.data.userNo,
+            content : req.body.data.content,
+            boardPw : req.body.data.boardPw,
         });
         console.log(board);
         res.status(201).json(board);
     } catch (err) {
-        console.error(err);
+        console.error("error:"+err);
         next(err);
     }
 });
@@ -39,7 +40,7 @@ router.post('/board', async (req, res, next) => {
  * @route PATCH /board
  * @description 게시글 수정
  */
-router.patch('/board', async (req, res, next) => {
+router.patch('/', async (req, res, next) => {
     try {
         const board = await Board.update({
             content : req.body.content,
@@ -59,7 +60,7 @@ router.patch('/board', async (req, res, next) => {
  * @route DELETE /board
  * @description 게시글 삭제
  */
-router.delete('/board', async (req, res, next) => {
+router.delete('/', async (req, res, next) => {
     try {
         const board = await Board.destory({
             where : { boardNo : req.body.boardNo }
