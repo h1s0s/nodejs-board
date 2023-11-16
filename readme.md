@@ -3,7 +3,7 @@
 Node.js 기반 Restful API 게시판 개발 프로젝트 입니다
 
 ### 기술 스택
-Node.js(express), MySQL, sequelize
+Node.js(express), MySQL, sequelize, swagger ui
 
 ### 주요 기능
 1. 게시물 CRUD API 개발
