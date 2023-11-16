@@ -4,8 +4,17 @@ const Board = require('../models/board');
 const router = express.Router();
 
 /**
- * @route GET /board
- * @description 게시글 목록 조회, 렌더링
+ * @swagger
+ * /board:
+ *   get:
+ *     summary: 게시글 조회
+ *     responses:
+ *       200:
+ *         description: 성공적으로 게시글 조회
+ *         content:
+ *           application/json:
+ *             example:
+ *               results: []
  */
 router.get('/', async (req, res, next) => {
     try {
@@ -18,8 +27,26 @@ router.get('/', async (req, res, next) => {
 });
 
 /**
- * @route POST /board
- * @description 게시글 작성
+ * @swagger
+ * /board:
+ *   post:
+ *     summary: 게시글 작성
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           example:
+ *             data:
+ *               userNo: '회원 번호'
+ *               content: '게시글 내용'
+ *               boardPw: '게시글 번호'
+ *     responses:
+ *       201:
+ *         description: 성공적으로 게시글 작성
+ *         content:
+ *           application/json:
+ *             example:
+ *               board: {}
  */
 router.post('/', async (req, res, next) => {
     try {
@@ -37,8 +64,24 @@ router.post('/', async (req, res, next) => {
 });
 
 /**
- * @route PATCH /board
- * @description 게시글 수정
+ * @swagger
+ * /board:
+ *   patch:
+ *     summary: 게시글 수정
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           example:
+ *             data:
+ *               boardNo: 1
+ *               content: '게시글 내용'
+ *               boardPw: '게시글 비밀번호'
+ *     responses:
+ *       200:
+ *         description: 성공적으로 게시글 수정
+ *       404:
+ *         description: 비밀번호가 틀려서 실패
  */
 router.patch('/', async (req, res, next) => {
     try {
@@ -59,8 +102,23 @@ router.patch('/', async (req, res, next) => {
 });
 
 /**
- * @route DELETE /board
- * @description 게시글 삭제
+ * @swagger
+ * /board:
+ *   delete:
+ *     summary: 게시글 삭제
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           example:
+ *             data:
+ *               boardNo: '게시글 번호'
+ *               boardPw: '게시글 비밀번호'
+ *     responses:
+ *       200:
+ *         description: 성공적으로 게시글 삭제
+ *       404:
+ *         description: 비밀번호가 틀려서 실패
  */
 router.delete('/', async (req, res, next) => {
     try {

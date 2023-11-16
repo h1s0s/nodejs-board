@@ -7,6 +7,7 @@ const path = require('path');
 
 dotenv.config();
 const { sequelize } = require('./models');
+const { swaggerUi, specs } = require('./swagger/swagger');
 const app = express();
 const port = 3000;
 
@@ -28,6 +29,9 @@ sequelize.sync({force: false})
     .catch((err)=> {
         console.error(err);
     });
+
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs))
 
 // 라우터 정의
 const indexRouter = require('./routes');
