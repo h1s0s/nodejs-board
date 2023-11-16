@@ -42,14 +42,16 @@ router.post('/', async (req, res, next) => {
  */
 router.patch('/', async (req, res, next) => {
     try {
-        const board = await Board.update({
-            content : req.body.content,
-            boardPw : req.body.boardPw
+        const result = await Board.update({
+            content : req.body.data.content,
         }, {
-            where : { boardNo : req.body.boardNo }
+            where : { boardNo : req.body.data.boardNo, boardPw : req.body.data.boardPw }
         });
-        console.log(board);
-        res.status(201).json(board);
+        if (result === 0) {
+            res.status(404).json({ message: '게시글이 없습니다.' });
+        } else {
+            res.status(200).json({ message: '게시글이 수정되었습니다.' });
+        }
     } catch (err) {
         console.error(err);
         next(err);
@@ -62,14 +64,12 @@ router.patch('/', async (req, res, next) => {
  */
 router.delete('/', async (req, res, next) => {
     try {
-        const result = await Board.destory({
+        const result = await Board.destroy({
             where : { boardNo : req.body.data.boardNo, boardPw: req.body.data.boardPw}
         });
         if (result === 0) {
-            // 삭제된 레코드가 없을 경우
             res.status(404).json({ message: '게시글이 없습니다.' });
         } else {
-            // 삭제된 레코드가 있을 경우
             res.status(200).json({ message: '게시글이 삭제되었습니다.' });
         }
     } catch (err) {
